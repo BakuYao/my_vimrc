@@ -158,6 +158,7 @@ set termencoding=gb18030
 set tags=./tags,tags;$HOME
 
 inoremap ( ()<ESC>i
+inoremap <silent><expr> ) getline('.')[col('.')-1] == ')' ? '<c-g>U<right>' : ')'
 inoremap " ""<ESC>i
 inoremap ' ''<ESC>i
 inoremap [ []<ESC>i
