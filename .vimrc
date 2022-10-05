@@ -157,6 +157,9 @@ set fileencodings=ucs-bom,utf-8,cp936,gb18030,latin1
 set termencoding=gb18030
 set tags=./tags,tags;$HOME
 
+" Accessing the system clipboard
+set clipboard=unnamedplus
+
 inoremap ( ()<ESC>i
 inoremap <silent><expr> ) getline('.')[col('.')-1] == ')' ? '<c-g>U<right>' : ')'
 inoremap " ""<ESC>i
