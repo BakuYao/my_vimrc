@@ -164,14 +164,16 @@ set clipboard=unnamedplus
 noremap <F4> :set hlsearch! hlsearch?<CR>
 
 inoremap ( ()<ESC>i
+" Move Cursor Right When Typing ')' and Character Under Cursor is ')'
+" https://stackoverflow.com/a/62615956/11425048
 inoremap <silent><expr> ) getline('.')[col('.')-1] == ')' ? '<c-g>U<right>' : ')'
+inoremap [ []<ESC>i
+inoremap <silent><expr> ] getline('.')[col('.')-1] == ']' ? '<c-g>U<right>' : ']'
 inoremap " ""<ESC>i
 inoremap ' ''<ESC>i
-inoremap [ []<ESC>i
 inoremap {<CR> {<CR>}<ESC>ko
 inoremap {{ {}<ESC>i
 filetype indent on
-
 
 """""""""""""""""""""""""""coc.nvim""""""""""""""""""""""""""""""
 
