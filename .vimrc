@@ -160,6 +160,9 @@ set tags=./tags,tags;$HOME
 " Accessing the system clipboard
 set clipboard=unnamedplus
 
+" toggle highlight search
+noremap <F4> :set hlsearch! hlsearch?<CR>
+
 inoremap ( ()<ESC>i
 inoremap <silent><expr> ) getline('.')[col('.')-1] == ')' ? '<c-g>U<right>' : ')'
 inoremap " ""<ESC>i
