@@ -27,6 +27,9 @@ Plug 'preservim/nerdcommenter'
 
 Plug 'rhysd/vim-clang-format'
 
+" added git-blame
+Plug 'zivyangll/git-blame.vim'
+
 call plug#end()
 " clang-format
 " let g:clang_format#auto_format_on_insert_leave=1
@@ -47,6 +50,7 @@ let &t_TI = ""
 let &t_TE = ""
 
 " YCM
+let g:ycm_confirm_extra_conf = 0
 let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_show_diagnostics_ui = 0
 let g:ycm_use_clangd = 0
@@ -56,9 +60,16 @@ set completeopt-=preview
 " nerdtree
 map <F5> :NERDTreeToggle<CR>
 
+" Copilot enable
+let g:copilot_enable = 1
+
 " ctags
 " map <C-\> :tab split<CR>:exec("tag ".expand("<cword>"))<CR>
 " map <A-]> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+
+" jump into tag with `\t`. This is workaround on windows machine because
+" ctrl+] doesn't work
+nnoremap <leader>t :tag <c-r><c-w><cr>
 
 " nerdcommenter
 " Add spaces after comment delimiters by default
@@ -83,49 +94,49 @@ map <leader>/ <plug>NERDCommenterToggle
 " map <C-q> <plug>NERDCommenterToggle
 
 " use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
-" set cscopetag
+set cscopetag
 
 " check cscope for definition of a symbol before checking ctags: set to 1
 " if you want the reverse search order.
-" set csto=0
+set csto=0
 
 " add any cscope database in current directory
-" if filereadable("cscope.out")
-    " cs add cscope.out
+if filereadable("cscope.out")
+    cs add cscope.out
 " else add the database pointed to by environment variable
-" elseif $CSCOPE_DB != ""
-    " cs add $CSCOPE_DB
-" endif
+elseif $CSCOPE_DB != ""
+    cs add $CSCOPE_DB
+endif
 
 " show msg when any other cscope db added
 " set cscopeverbose  
 
 " Cscope auto exec
-function! Create_cscope_file(execfile)                                           
-    exe "! bash" a:execfile a:execfile                                                                  
-endfunction
-
-function! Create_cscope_out(cscope_files)                                           
-    exe "! cscope -bRq -i" a:cscope_files                                                                  
-endfunction
-
-if has("cscope")
-    let cscope_exec=findfile("cscope.sh", ".;")
-    if !empty(cscope_exec)
-        if cscope_exec ==? "cscope.sh"
-            set csre
-        endif
-        silent call Create_cscope_file(cscope_exec)
-        let cscope_files=findfile("cscope.files", ".;")
-        if !empty(cscope_files) && filereadable(cscope_files)
-            silent call Create_cscope_out(cscope_files)
-            let cscope_out=findfile("cscope.out", ".;")
-            if !empty(cscope_out) && filereadable(cscope_out)
-                silent exe "cs add" cscope_out
-            endif
-        endif
-    endif
-endif
+" function! Create_cscope_file(execfile)
+"     exe "! bash" a:execfile a:execfile
+" endfunction
+"
+" function! Create_cscope_out(cscope_files)
+"     exe "! cscope -bRq -i" a:cscope_files
+" endfunction
+"
+" if has("cscope")
+"     let cscope_exec=findfile("cscope.sh", ".;")
+"     if !empty(cscope_exec)
+"         if cscope_exec ==? "cscope.sh"
+"             set csre
+"         endif
+"         silent call Create_cscope_file(cscope_exec)
+"         let cscope_files=findfile("cscope.files", ".;")
+"         if !empty(cscope_files) && filereadable(cscope_files)
+"             silent call Create_cscope_out(cscope_files)
+"             let cscope_out=findfile("cscope.out", ".;")
+"             if !empty(cscope_out) && filereadable(cscope_out)
+"                 silent exe "cs add" cscope_out
+"             endif
+"         endif
+"     endif
+" endif
 
 " cscope shortcut
 noremap <leader>cs :cs find s 
@@ -138,23 +149,29 @@ noremap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
 noremap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
 noremap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 
+" check git blame
+nnoremap <Leader>s :<C-u>call gitblame#echo()<CR>
+
 " Cut git commit line to 72 characters
 au FileType gitcommit setlocal tw=72
 
 set nu
 set ai
 set cursorline
-set tabstop=4
-set shiftwidth=4
+set smarttab       " Smart handling of the tab key
+set shiftround     " Round indent to multiple of shiftwidth
+set shiftwidth=4   " Number of spaces for each indent
+set tabstop=4      " Number of spaces for tab key
+set softtabstop=4  " Number of spaces for tab key while performing editing operations
 set expandtab
 set mouse=a
 set backspace=2
 set history=100
 set t_Co=256
 set incsearch
-set encoding=utf8
+set encoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,latin1
-set termencoding=gb18030
+set termencoding=utf-8
 set tags=./tags,tags;$HOME
 
 " Accessing the system clipboard
@@ -174,6 +191,17 @@ inoremap ' ''<ESC>i
 inoremap {<CR> {<CR>}<ESC>ko
 inoremap {{ {}<ESC>i
 filetype indent on
+
+" open JSON reader jq in vim
+command JSON %!jq .
+
+" open terminal below all splits
+cabbrev bterm bo term
+
+" scroll terminal. press a or i to exit
+tnoremap <c-b> <c-\><c-n>
+
+command! CopyPath let @+ = expand('%')
 
 """""""""""""""""""""""""""coc.nvim""""""""""""""""""""""""""""""
 
